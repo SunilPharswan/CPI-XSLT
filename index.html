@@ -13,35 +13,50 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <h1 class="mb-4">SAP CPI XSLT Executor</h1>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="xmlInput" class="form-label">XML Payload</label>
-                <textarea class="form-control" id="xmlInput" rows="10" placeholder="Enter your XML payload here..."></textarea>
+        <div class="row">
+            <!-- Left Side -->
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label for="xmlInput" class="form-label">XML Payload</label>
+                    <textarea class="form-control" id="xmlInput" rows="8" placeholder="Enter your XML payload here..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="propertiesInput" class="form-label">Properties (JSON format)</label>
+                    <textarea class="form-control" id="propertiesInput" rows="4" placeholder='{"property1": "value1", "property2": "value2"}'></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="headersInput" class="form-label">Headers (JSON format)</label>
+                    <textarea class="form-control" id="headersInput" rows="4" placeholder='{"header1": "value1", "header2": "value2"}'></textarea>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label for="xsltInput" class="form-label">XSLT Stylesheet</label>
-                <textarea class="form-control" id="xsltInput" rows="10" placeholder="Enter your XSLT stylesheet here..."></textarea>
+
+            <!-- Center -->
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label for="xsltInput" class="form-label">XSLT Stylesheet</label>
+                    <textarea class="form-control" id="xsltInput" rows="15" placeholder="Enter your XSLT stylesheet here..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="console" class="form-label">Console</label>
+                    <div id="console" class="form-control" style="height: 200px; overflow-y: auto; background-color: #f8f9fa;"></div>
+                </div>
+
+                <button class="btn btn-primary" onclick="transform()">Execute XSLT</button>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label for="propertiesInput" class="form-label">Properties (JSON format)</label>
-            <textarea class="form-control" id="propertiesInput" rows="3" placeholder='{"property1": "value1", "property2": "value2"}'></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="headersInput" class="form-label">Headers (JSON format)</label>
-            <textarea class="form-control" id="headersInput" rows="3" placeholder='{"header1": "value1", "header2": "value2"}'></textarea>
-        </div>
-
-        <button class="btn btn-primary mb-3" onclick="transform()">Execute XSLT</button>
-
-        <div class="mb-3">
-            <label for="output" class="form-label">Output</label>
-            <div id="output" class="form-control" style="height: 300px; overflow-y: auto;"></div>
+            <!-- Right Side -->
+            <div class="col-md-5">
+                <div class="mb-3">
+                    <label for="output" class="form-label">Output</label>
+                    <div id="output" class="form-control" style="height: 600px; overflow-y: auto;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
