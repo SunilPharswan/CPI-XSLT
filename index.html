@@ -61,7 +61,20 @@
     </div>
 
     <script>
+        function logToConsole(message) {
+            const consoleDiv = document.getElementById('console');
+            consoleDiv.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        function clearConsole() {
+            document.getElementById('console').textContent = '';
+        }
+
         function transform() {
+            clearConsole();
+            document.getElementById('output').textContent = '';
+
             const xmlText = document.getElementById('xmlInput').value;
             const xsltText = document.getElementById('xsltInput').value;
             const propertiesText = document.getElementById('propertiesInput').value;
@@ -73,15 +86,20 @@
             }
 
             try {
+                logToConsole('Parsing XML...');
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+
+                logToConsole('Parsing XSLT...');
                 const xsltDoc = parser.parseFromString(xsltText, 'text/xml');
 
+                logToConsole('Importing stylesheet...');
                 const processor = new XSLTProcessor();
                 processor.importStylesheet(xsltDoc);
 
                 // Set parameters if provided
                 if (propertiesText) {
+                    logToConsole('Setting properties as parameters...');
                     const properties = JSON.parse(propertiesText);
                     for (const [key, value] of Object.entries(properties)) {
                         processor.setParameter(null, key, value);
@@ -89,18 +107,22 @@
                 }
 
                 if (headersText) {
+                    logToConsole('Setting headers as parameters...');
                     const headers = JSON.parse(headersText);
                     for (const [key, value] of Object.entries(headers)) {
                         processor.setParameter(null, key, value);
                     }
                 }
 
+                logToConsole('Transforming...');
                 const result = processor.transformToDocument(xmlDoc);
                 const serializer = new XMLSerializer();
                 const output = serializer.serializeToString(result);
 
+                logToConsole('Transformation completed.');
                 document.getElementById('output').textContent = output;
             } catch (error) {
+                logToConsole('Error: ' + error.message);
                 document.getElementById('output').textContent = 'Error: ' + error.message;
             }
         }
