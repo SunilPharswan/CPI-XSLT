@@ -46,6 +46,7 @@ header {
     align-items: center;
     box-shadow: 0 4px 20px var(--shadow);
     position: relative;
+    z-index: 1500;
 }
 
 header::before {
@@ -72,6 +73,12 @@ header::before {
 .logo::before {
     content: '⚡';
     font-size: 1.8rem;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 }
 
 
@@ -300,6 +307,7 @@ header::before {
     border-radius: var(--radius);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     box-shadow: 0 8px 32px var(--shadow);
     transition: var(--transition);
 }
@@ -347,7 +355,6 @@ button:hover::before {
     background: linear-gradient(135deg, var(--success), #059669);
     color: white;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-    margin-left: auto;
 }
 
 #run-btn:hover {
@@ -381,16 +388,16 @@ button:hover::before {
 
 .template-menu {
     display: none;
-    position: absolute;
+    position: fixed;
     background: var(--surface);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius);
     box-shadow: 0 8px 32px var(--shadow);
     backdrop-filter: blur(30px);
-    z-index: 1000;
+    z-index: 2000;
     min-width: 200px;
-    top: 100%;
-    left: 0;
+    top: 4rem;
+    right: 2rem;
     margin-top: 0.5rem;
 }
 

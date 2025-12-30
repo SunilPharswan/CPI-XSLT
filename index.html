@@ -14,22 +14,21 @@
 
 <header>
     <div class="logo">XSLT Editor for SAP ® Cloud Integration</div>
-</header>
-
-<div class="toolbar">
-    <div class="template-dropdown">
-        <button id="template-btn" class="btn-sec"><i class="fas fa-plus"></i> New</button>
-        <div id="template-menu" class="template-menu">
-            <div class="template-option" data-template="basic">Basic XML to XML</div>
-            <div class="template-option" data-template="html">XML to HTML Table</div>
-            <div class="template-option" data-template="filter">Data Filtering</div>
-            <div class="template-option" data-template="group">Grouping Example</div>
-            <div class="template-option" data-template="json">JSON-like Output</div>
-            <div class="template-option" data-template="complex">Complex Document</div>
+    <div class="header-buttons">
+        <div class="template-dropdown">
+            <button id="template-btn" class="btn-sec"><i class="fas fa-plus"></i> New</button>
+            <div id="template-menu" class="template-menu">
+                <div class="template-option" data-template="basic">Basic XML to XML</div>
+                <div class="template-option" data-template="html">XML to HTML Table</div>
+                <div class="template-option" data-template="filter">Data Filtering</div>
+                <div class="template-option" data-template="group">Grouping Example</div>
+                <div class="template-option" data-template="json">JSON-like Output</div>
+                <div class="template-option" data-template="complex">Complex Document</div>
+            </div>
         </div>
+        <button id="run-btn"><i class="fas fa-play"></i> Run</button>
     </div>
-    <button id="run-btn"><i class="fas fa-play"></i> Run</button>
-</div>
+</header>
 
 <div class="main-layout">
     <div class="editor-box">
@@ -37,7 +36,6 @@
             <div class="label"><i class="fas fa-inbox"></i> Input</div>
             <div class="section-buttons">
                 <button id="toggle-input" class="btn-sec" title="Toggle Input Panel"><i class="fas fa-chevron-left toggle-icon"></i></button>
-                <button id="toggle-console-alt" class="console-btn" title="Toggle Console"><i class="fas fa-chevron-down"></i></button>
                 <button class="btn-sec" onclick="formatXML()" title="Format"><i class="fas fa-code"></i></button>
                 <input type="file" id="xml-upload" accept=".xml" style="display: none;">
                 <button class="btn-sec" onclick="document.getElementById('xml-upload').click()" title="Upload"><i class="fas fa-upload"></i></button>
