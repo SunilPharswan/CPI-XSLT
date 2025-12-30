@@ -36,21 +36,6 @@ A powerful web-based XSLT editor designed specifically for SAP Cloud Integration
    python -m http.server 8000
    ```
 
-   **Using Python 2:**
-   ```bash
-   python -m SimpleHTTPServer 8000
-   ```
-
-   **Using Node.js (if available):**
-   ```bash
-   npx http-server -p 8000
-   ```
-
-   **Using PHP:**
-   ```bash
-   php -S localhost:8000
-   ```
-
 3. Open `http://localhost:8000` in your web browser
 
 The application runs entirely client-side but requires a web server due to ES6 module imports.
@@ -83,7 +68,13 @@ The application runs entirely client-side but requires a web server due to ES6 m
   - **JSON-like Output**: Generate JSON-like text output
   - **Complex Document**: Invoice processing with advanced formatting
 
-- **Console**: Monitor transformation errors and runtime information
+- **Console**: Comprehensive activity logging including:
+  - All button operations (format, download, copy, console controls)
+  - File upload/download operations
+  - Example loading
+  - Keyboard shortcut usage
+  - Transformation start/completion/errors
+  - Real-time error count display
 
 ## Examples
 
