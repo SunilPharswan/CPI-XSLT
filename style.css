@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
+    --primary: #0ea5e9;
+    --primary-dark: #0284c7;
     --secondary: #64748b;
     --success: #10b981;
     --error: #ef4444;
@@ -63,10 +63,7 @@ header::before {
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary), #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -88,36 +85,11 @@ header::before {
     gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 10;
 }
 
-select {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius);
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    color: var(--text);
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 200px;
-}
 
-select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-select:hover {
-    background: var(--surface-hover);
-}
-
-select option {
-    background: var(--surface);
-    color: var(--text);
-}
 
 .main-layout {
     display: flex;
@@ -125,6 +97,27 @@ select option {
     gap: 1rem;
     padding: 1rem;
     overflow: hidden;
+}
+
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+    padding: 0.5rem 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    z-index: 999;
+    height: 3rem;
+}
+
+.footer-content p {
+    margin: 0;
+    font-weight: 400;
 }
 
 .editor-box {
@@ -299,6 +292,49 @@ button:hover::before {
     box-shadow: 0 4px 15px var(--shadow);
 }
 
+/* Template Dropdown */
+.template-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.template-menu {
+    display: none;
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px var(--shadow);
+    backdrop-filter: blur(30px);
+    z-index: 1000;
+    min-width: 200px;
+    top: 100%;
+    left: 0;
+    margin-top: 0.5rem;
+}
+
+.template-menu.show {
+    display: block;
+}
+
+.template-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.template-option:last-child {
+    border-bottom: none;
+}
+
+.template-option:hover {
+    background: var(--surface-hover);
+    color: var(--primary);
+}
+
+
+
 
 
 /* Responsive Design */
@@ -363,7 +399,7 @@ button:hover::before {
 /* Console Panel */
 #console-panel {
     position: fixed;
-    bottom: 0;
+    bottom: 3rem;
     left: 0;
     right: 0;
     background: var(--glass);

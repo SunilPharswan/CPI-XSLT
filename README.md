@@ -60,7 +60,8 @@ The application runs entirely client-side but requires a web server due to ES6 m
   - Click the format button (🔧) in each panel to auto-format code
   - XML pretty-printing with proper indentation
 
-- **Examples**: Select from the dropdown to load pre-built examples:
+- **Templates**: Click "New" button to access template options:
+  - **CPI Blank**: Clean XSLT template with basic structure
   - **Basic**: Simple XML to XML transformation
   - **HTML Table**: Convert XML data to HTML table
   - **Data Filtering**: Filter and transform data based on conditions
