@@ -77,19 +77,7 @@ header::before {
     font-size: 1.8rem;
 }
 
-.status-msg {
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius);
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-}
 
-.status-msg.error {
-    color: var(--error);
-    border-color: var(--error);
-}
 
 .toolbar {
     background: var(--glass);
@@ -311,9 +299,7 @@ button:hover::before {
     box-shadow: 0 4px 15px var(--shadow);
 }
 
-.error {
-    color: var(--error);
-}
+
 
 /* Responsive Design */
 @media (max-width: 1200px) {
