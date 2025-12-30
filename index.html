@@ -3,129 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAP CPI XSLT Executor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>XSLT 3.0 Web IDE</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+
     <style>
-        body { padding: 20px; }
-        .container { max-width: 1200px; }
-        textarea { font-family: monospace; }
-        #output { background-color: #f8f9fa; padding: 10px; border-radius: 5px; white-space: pre-wrap; }
+        :root { --accent: #4caf50; --bg: #121212; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+        header { background: #222; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .toolbar { background: #fff; padding: 8px 20px; border-bottom: 1px solid #bbb; display: flex; gap: 12px; }
+        
+        .main-layout { display: flex; flex: 1; overflow: hidden; gap: 4px; padding: 4px; }
+        .editor-box { flex: 1; display: flex; flex-direction: column; background: #fff; border: 1px solid #999; }
+        .label { background: #444; color: white; padding: 4px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .CodeMirror { flex: 1; height: auto; font-size: 13px; line-height: 1.5; }
+        
+        #result-panel { flex: 1; background: #1e1e1e; color: #d4d4d4; display: flex; flex-direction: column; }
+        #output-text { flex: 1; padding: 15px; font-family: 'Fira Code', 'Consolas', monospace; overflow: auto; white-space: pre-wrap; margin: 0; font-size: 13px; color: #9cdcfe; }
+        
+        button { padding: 8px 18px; cursor: pointer; border: none; border-radius: 3px; font-weight: bold; transition: 0.2s; }
+        #run-btn { background: var(--accent); color: white; }
+        #run-btn:hover { background: #388e3c; }
+        .btn-sec { background: #607d8b; color: white; }
+        .error { color: #f44336; }
+        .status-msg { font-size: 12px; }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <h1 class="mb-4">SAP CPI XSLT Executor</h1>
 
-        <div class="row">
-            <!-- Left Side -->
-            <div class="col-md-3">
-                <div class="mb-3">
-                    <label for="xmlInput" class="form-label">XML Payload</label>
-                    <textarea class="form-control" id="xmlInput" rows="8" placeholder="Enter your XML payload here..."></textarea>
-                </div>
+<header>
+    <span><strong>Gemini XSLT</strong> Engine (Saxon-JS 2.7)</span>
+    <span id="lib-status" class="status-msg">Initializing...</span>
+</header>
 
-                <div class="mb-3">
-                    <label for="propertiesInput" class="form-label">Properties (JSON format)</label>
-                    <textarea class="form-control" id="propertiesInput" rows="4" placeholder='{"property1": "value1", "property2": "value2"}'></textarea>
-                </div>
+<div class="toolbar">
+    <button id="run-btn">RUN TRANSFORMATION</button>
+    <button class="btn-sec" onclick="formatAll()">PRETTIFY CODE</button>
+    <button class="btn-sec" onclick="downloadResult()">DOWNLOAD</button>
+</div>
 
-                <div class="mb-3">
-                    <label for="headersInput" class="form-label">Headers (JSON format)</label>
-                    <textarea class="form-control" id="headersInput" rows="4" placeholder='{"header1": "value1", "header2": "value2"}'></textarea>
-                </div>
-            </div>
-
-            <!-- Center -->
-            <div class="col-md-4">
-                <div class="mb-3">
-                    <label for="xsltInput" class="form-label">XSLT Stylesheet</label>
-                    <textarea class="form-control" id="xsltInput" rows="15" placeholder="Enter your XSLT stylesheet here..."></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="console" class="form-label">Console</label>
-                    <div id="console" class="form-control" style="height: 200px; overflow-y: auto; background-color: #f8f9fa;"></div>
-                </div>
-
-                <button class="btn btn-primary" onclick="transform()">Execute XSLT</button>
-            </div>
-
-            <!-- Right Side -->
-            <div class="col-md-5">
-                <div class="mb-3">
-                    <label for="output" class="form-label">Output</label>
-                    <div id="output" class="form-control" style="height: 600px; overflow-y: auto;"></div>
-                </div>
-            </div>
-        </div>
+<div class="main-layout">
+    <div class="editor-box">
+        <div class="label">XML Input</div>
+        <textarea id="xml-input"></textarea>
     </div>
+    <div class="editor-box">
+        <div class="label">XSLT 3.0 Stylesheet</div>
+        <textarea id="xslt-input"></textarea>
+    </div>
+    <div id="result-panel">
+        <div class="label" style="background: #007acc;">Output</div>
+        <pre id="output-text">Press Run to see results...</pre>
+    </div>
+</div>
 
-    <script>
-        function logToConsole(message) {
-            const consoleDiv = document.getElementById('console');
-            consoleDiv.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
-            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+
+<script src="lib/SaxonJS2.js"></script>
+
+<script>
+    let xmlEditor, xsltEditor;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const status = document.getElementById('lib-status');
+        const output = document.getElementById('output-text');
+
+        // 1. Check if SaxonJS2.js loaded correctly
+        if (typeof SaxonJS === 'undefined') {
+            status.innerHTML = "❌ Library not found in /lib/SaxonJS2.js";
+            status.classList.add('error');
+            return;
         }
+        status.innerHTML = "✅ Saxon-JS 2.7 Loaded";
 
-        function clearConsole() {
-            document.getElementById('console').textContent = '';
-        }
+        // 2. Setup Editors
+        const cmConfig = { mode: 'xml', lineNumbers: true, theme: 'monokai', viewportMargin: Infinity };
+        xmlEditor = CodeMirror.fromTextArea(document.getElementById('xml-input'), cmConfig);
+        xsltEditor = CodeMirror.fromTextArea(document.getElementById('xslt-input'), cmConfig);
 
-        function transform() {
-            clearConsole();
-            document.getElementById('output').textContent = '';
+        // 3. Default Demo Data
+        xmlEditor.setValue(`<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <user id="1" role="admin">Alice</user>
+    <user id="2" role="editor">Bob</user>
+</data>`);
 
-            const xmlText = document.getElementById('xmlInput').value;
-            const xsltText = document.getElementById('xsltInput').value;
-            const propertiesText = document.getElementById('propertiesInput').value;
-            const headersText = document.getElementById('headersInput').value;
+        xsltEditor.setValue(`<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
+    <xsl:output method="xml" indent="yes"/>
 
-            if (!xmlText || !xsltText) {
-                document.getElementById('output').textContent = 'Please provide both XML and XSLT.';
-                return;
-            }
+    <xsl:template match="/">
+        <report date="{current-date()}">
+            <xsl:apply-templates select="//user"/>
+        </report>
+    </xsl:template>
+
+    <xsl:template match="user">
+        <entry name="{.}" type="{@role}"/>
+    </xsl:template>
+</xsl:stylesheet>`);
+
+        // 4. The Transformation Logic (The Fix for JSON error)
+        document.getElementById('run-btn').addEventListener('click', () => {
+            output.textContent = "Processing...";
+            output.style.color = "#9cdcfe";
 
             try {
-                logToConsole('Parsing XML...');
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-
-                logToConsole('Parsing XSLT...');
-                const xsltDoc = parser.parseFromString(xsltText, 'text/xml');
-
-                logToConsole('Importing stylesheet...');
-                const processor = new XSLTProcessor();
-                processor.importStylesheet(xsltDoc);
-
-                // Set parameters if provided
-                if (propertiesText) {
-                    logToConsole('Setting properties as parameters...');
-                    const properties = JSON.parse(propertiesText);
-                    for (const [key, value] of Object.entries(properties)) {
-                        processor.setParameter(null, key, value);
+                /* Using the XPath transform() function is the most reliable 
+                   way to handle dynamic XSLT strings in the browser. 
+                */
+                const result = SaxonJS.XPath.evaluate(`
+                    transform(map {
+                        'stylesheet-text' : $xslt,
+                        'source-node' : parse-xml($xml),
+                        'delivery-format' : 'serialized'
+                    })?output`, 
+                    [], 
+                    { 
+                        params: { 
+                            xslt: xsltEditor.getValue(), 
+                            xml: xmlEditor.getValue() 
+                        } 
                     }
-                }
+                );
 
-                if (headersText) {
-                    logToConsole('Setting headers as parameters...');
-                    const headers = JSON.parse(headersText);
-                    for (const [key, value] of Object.entries(headers)) {
-                        processor.setParameter(null, key, value);
-                    }
-                }
-
-                logToConsole('Transforming...');
-                const result = processor.transformToDocument(xmlDoc);
-                const serializer = new XMLSerializer();
-                const output = serializer.serializeToString(result);
-
-                logToConsole('Transformation completed.');
-                document.getElementById('output').textContent = output;
-            } catch (error) {
-                logToConsole('Error: ' + error.message);
-                document.getElementById('output').textContent = 'Error: ' + error.message;
+                output.textContent = result;
+            } catch (err) {
+                console.error(err);
+                output.textContent = "Transformation Error:\n" + err.message;
+                output.style.color = "#f44336";
             }
-        }
-    </script>
+        });
+    });
+
+    // Formatting Tool
+    function formatAll() {
+        const format = (v) => v.replace(/>\s*</g, '><').replace(/<([^?\/!][^>]*?)\/>/g, '<$1 />').replace(/>(?=<)/g, '>\n');
+        xmlEditor.setValue(format(xmlEditor.getValue()));
+        xsltEditor.setValue(format(xsltEditor.getValue()));
+    }
+
+    // Download Tool
+    function downloadResult() {
+        const text = document.getElementById('output-text').textContent;
+        const blob = new Blob([text], {type: "text/xml"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = "result.xml"; a.click();
+    }
+</script>
+
 </body>
 </html>
