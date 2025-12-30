@@ -26,21 +26,37 @@
         <option value="complex">Complex Document</option>
     </select>
     <button id="run-btn">▶️ RUN TRANSFORMATION</button>
-    <button class="btn-sec" onclick="formatAll()">✨ PRETTIFY CODE</button>
-    <button class="btn-sec" onclick="downloadResult()">💾 DOWNLOAD</button>
 </div>
 
 <div class="main-layout">
     <div class="editor-box">
-        <div class="label">XML Input</div>
+        <div class="section-header">
+            <div class="label">📥 XML Input</div>
+            <div class="section-buttons">
+                <button class="btn-sec" onclick="formatXML()">✨ Format</button>
+                <button class="btn-sec" onclick="downloadXML()">💾 Download</button>
+            </div>
+        </div>
         <div id="xml-editor" class="editor-container"></div>
     </div>
     <div class="editor-box">
-        <div class="label">XSLT 3.0 Stylesheet</div>
+        <div class="section-header">
+            <div class="label">🔄 XSLT 3.0 Stylesheet</div>
+            <div class="section-buttons">
+                <button class="btn-sec" onclick="formatXSLT()">✨ Format</button>
+                <button class="btn-sec" onclick="downloadXSLT()">💾 Download</button>
+            </div>
+        </div>
         <div id="xslt-editor" class="editor-container"></div>
     </div>
     <div id="result-panel">
-        <div class="label">Output</div>
+        <div class="section-header">
+            <div class="label">📤 Output</div>
+            <div class="section-buttons">
+                <button class="btn-sec" onclick="formatOutput()">✨ Format</button>
+                <button class="btn-sec" onclick="downloadOutput()">💾 Download</button>
+            </div>
+        </div>
         <div id="output-editor" class="editor-container"></div>
     </div>
 </div>
@@ -74,6 +90,63 @@
     let xmlEditor, xsltEditor, outputEditor;
     let consoleMessages = [];
     let isConsoleCollapsed = false;
+
+    // XML Pretty Print function
+    function prettyPrintXML(xml) {
+        let formatted = '';
+        let indent = 0;
+        const tab = '    '; // 4 spaces
+
+        // First, normalize whitespace
+        xml = xml.replace(/>\s+</g, '><').replace(/<\s+/g, '<').replace(/\s+>/g, '>').trim();
+
+        // Split into tokens: tags and text
+        const tokens = xml.split(/(<[^>]*>)/).filter(token => token.trim());
+
+        let i = 0;
+        while (i < tokens.length) {
+            let token = tokens[i].trim();
+            if (!token) {
+                i++;
+                continue;
+            }
+
+            if (token.startsWith('</')) {
+                // Closing tag
+                indent = Math.max(0, indent - 1);
+                formatted += tab.repeat(indent) + token + '\n';
+            } else if (token.startsWith('<') && token.endsWith('/>')) {
+                // Self-closing tag
+                formatted += tab.repeat(indent) + token + '\n';
+            } else if (token.startsWith('<') && !token.includes('?>')) {
+                // Opening tag - check if it has simple text content
+                const openingTag = token;
+                const nextToken = tokens[i + 1]?.trim();
+                const afterNext = tokens[i + 2]?.trim();
+
+                if (nextToken && !nextToken.startsWith('<') && afterNext && afterNext.startsWith('</')) {
+                    // Simple text content - keep on same line
+                    const textContent = nextToken;
+                    const closingTag = afterNext;
+                    formatted += tab.repeat(indent) + openingTag + textContent + closingTag + '\n';
+                    i += 2; // Skip the next two tokens
+                } else {
+                    // Complex content - normal formatting
+                    formatted += tab.repeat(indent) + token + '\n';
+                    indent++;
+                }
+            } else if (token.startsWith('<?')) {
+                // Processing instruction
+                formatted += tab.repeat(indent) + token + '\n';
+            } else {
+                // Text content (for complex cases)
+                formatted += tab.repeat(indent) + token + '\n';
+            }
+            i++;
+        }
+
+        return formatted.trim();
+    }
 
     // Console management functions
     function addConsoleMessage(type, message, details = '') {
@@ -246,6 +319,18 @@
             readOnly: true
         };
 
+        // Register XML formatter
+        monaco.languages.registerDocumentFormattingEditProvider('xml', {
+            provideDocumentFormattingEdits: function(model) {
+                const xml = model.getValue();
+                const formatted = prettyPrintXML(xml);
+                return [{
+                    range: model.getFullModelRange(),
+                    text: formatted
+                }];
+            }
+        });
+
         console.log('Creating XML editor...');
         xmlEditor = monaco.editor.create(document.getElementById('xml-editor'), xmlOptions);
         console.log('Creating XSLT editor...');
@@ -354,16 +439,61 @@
         xsltEditor.setValue(format(xsltEditor.getValue()));
     }
 
+    // Per-section formatting using Monaco's built-in formatter
+    function formatXML() {
+        xmlEditor.trigger('', 'editor.action.formatDocument');
+    }
+
+    function formatXSLT() {
+        xsltEditor.trigger('', 'editor.action.formatDocument');
+    }
+
+    function formatOutput() {
+        // Temporarily make output editable for formatting
+        outputEditor.updateOptions({ readOnly: false });
+        outputEditor.trigger('', 'editor.action.formatDocument');
+        // Make it read-only again after a short delay
+        setTimeout(() => {
+            outputEditor.updateOptions({ readOnly: true });
+        }, 100);
+    }
+
     // Download Tool
     function downloadResult() {
-        const text = outputEditor.getValue();
+        downloadContent(outputEditor.getValue(), 'result.xml');
+    }
+
+    // Per-section download
+    function downloadXML() {
+        downloadContent(xmlEditor.getValue(), 'xml-input.xml');
+    }
+
+    function downloadXSLT() {
+        downloadContent(xsltEditor.getValue(), 'xslt-stylesheet.xsl');
+    }
+
+    function downloadOutput() {
+        downloadContent(outputEditor.getValue(), 'output.xml');
+    }
+
+    // General download function
+    function downloadContent(text, filename) {
         const blob = new Blob([text], {type: "text/xml"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = "result.xml";
+        a.download = filename;
         a.click();
+        URL.revokeObjectURL(url);
     }
+
+    // Make functions global for onclick handlers
+    window.formatXML = formatXML;
+    window.formatXSLT = formatXSLT;
+    window.formatOutput = formatOutput;
+    window.downloadXML = downloadXML;
+    window.downloadXSLT = downloadXSLT;
+    window.downloadOutput = downloadOutput;
 
     // XSLT Validation Function
     function validateXSLT(editor) {
