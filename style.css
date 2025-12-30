@@ -97,6 +97,87 @@ header::before {
     gap: 1rem;
     padding: 1rem;
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.main-layout.input-collapsed .editor-box:first-child {
+    flex: 0 0 60px;
+    min-width: 60px;
+}
+
+.main-layout.input-collapsed .editor-box:first-child .editor-container {
+    display: none;
+}
+
+.main-layout.input-collapsed .editor-box:first-child .section-header {
+    height: 100%;
+    padding: 0.5rem;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+}
+
+.main-layout.input-collapsed .editor-box:first-child .section-header .label {
+    transform: rotate(90deg);
+    white-space: nowrap;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.main-layout.input-collapsed .editor-box:first-child .section-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.main-layout.input-collapsed .editor-box:first-child .section-buttons button:not(#toggle-input) {
+    display: none;
+}
+
+.main-layout.input-collapsed .editor-box:first-child .section-buttons #toggle-console {
+    display: flex;
+}
+
+.main-layout.output-collapsed #result-panel {
+    flex: 0 0 60px;
+    min-width: 60px;
+}
+
+.main-layout.output-collapsed #result-panel .editor-container {
+    display: none;
+}
+
+.main-layout.output-collapsed #result-panel .section-header {
+    height: 100%;
+    padding: 0.5rem;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+}
+
+.main-layout.output-collapsed #result-panel .section-header .label {
+    transform: rotate(-90deg);
+    white-space: nowrap;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.main-layout.output-collapsed #result-panel .section-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.main-layout.output-collapsed #result-panel .section-buttons button:not(#toggle-output) {
+    display: none;
 }
 
 .site-footer {

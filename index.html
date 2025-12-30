@@ -34,8 +34,10 @@
 <div class="main-layout">
     <div class="editor-box">
         <div class="section-header">
-            <div class="label"><i class="fas fa-inbox"></i> Input Message</div>
+            <div class="label"><i class="fas fa-inbox"></i> Input</div>
             <div class="section-buttons">
+                <button id="toggle-input" class="btn-sec" title="Toggle Input Panel"><i class="fas fa-chevron-left toggle-icon"></i></button>
+                <button id="toggle-console-alt" class="console-btn" title="Toggle Console"><i class="fas fa-chevron-down"></i></button>
                 <button class="btn-sec" onclick="formatXML()" title="Format"><i class="fas fa-code"></i></button>
                 <input type="file" id="xml-upload" accept=".xml" style="display: none;">
                 <button class="btn-sec" onclick="document.getElementById('xml-upload').click()" title="Upload"><i class="fas fa-upload"></i></button>
@@ -60,8 +62,9 @@
     </div>
     <div id="result-panel">
         <div class="section-header">
-            <div class="label"><i class="fas fa-paper-plane"></i> Output Message</div>
+            <div class="label"><i class="fas fa-paper-plane"></i> Output</div>
             <div class="section-buttons">
+                <button id="toggle-output" class="btn-sec" title="Toggle Output Panel"><i class="fas fa-chevron-left toggle-output-icon"></i></button>
                 <button class="btn-sec" onclick="formatOutput()" title="Format"><i class="fas fa-code"></i></button>
                 <button class="btn-sec" onclick="copyOutput()" title="Copy"><i class="fas fa-copy"></i></button>
                 <button class="btn-sec" onclick="downloadOutput()" title="Download"><i class="fas fa-download"></i></button>
