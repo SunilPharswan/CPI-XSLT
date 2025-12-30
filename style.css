@@ -285,6 +285,7 @@ button:hover::before {
     background: linear-gradient(135deg, var(--success), #059669);
     color: white;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    margin-left: auto;
 }
 
 #run-btn:hover {

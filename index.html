@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAP Cloud Integration XSLT Editor - Monaco Editor</title>
+    <title>XSLT Editor for SAP ® Cloud Integration</title>
 
     <link rel="stylesheet" href="style.css">
 
@@ -12,7 +12,7 @@
 <body>
 
 <header>
-    <div class="logo">SAP Cloud Integration XSLT Editor</div>
+    <div class="logo">XSLT Editor for SAP ® Cloud Integration</div>
 </header>
 
 <div class="toolbar">
@@ -34,6 +34,8 @@
             <div class="label">📥 XML Input</div>
             <div class="section-buttons">
                 <button class="btn-sec" onclick="formatXML()">✨ Format</button>
+                <input type="file" id="xml-upload" accept=".xml" style="display: none;">
+                <button class="btn-sec" onclick="document.getElementById('xml-upload').click()">📤 Upload</button>
                 <button class="btn-sec" onclick="downloadXML()">💾 Download</button>
             </div>
         </div>
@@ -41,9 +43,11 @@
     </div>
     <div class="editor-box">
         <div class="section-header">
-            <div class="label">🔄 XSLT 3.0 Stylesheet</div>
+            <div class="label">🔄 XSLT Stylesheet</div>
             <div class="section-buttons">
                 <button class="btn-sec" onclick="formatXSLT()">✨ Format</button>
+                <input type="file" id="xslt-upload" accept=".xsl,.xslt" style="display: none;">
+                <button class="btn-sec" onclick="document.getElementById('xslt-upload').click()">📤 Upload</button>
                 <button class="btn-sec" onclick="downloadXSLT()">💾 Download</button>
             </div>
         </div>
