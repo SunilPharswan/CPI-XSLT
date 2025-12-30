@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAP Cloud Integration XSLT Editor</title>
+    <title>SAP Cloud Integration XSLT Editor - Monaco Editor</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material.min.css">
     <link rel="stylesheet" href="style.css">
 
 
@@ -35,65 +33,84 @@
 <div class="main-layout">
     <div class="editor-box">
         <div class="label">XML Input</div>
-        <textarea id="xml-input"></textarea>
+        <div id="xml-editor" class="editor-container"></div>
     </div>
     <div class="editor-box">
         <div class="label">XSLT 3.0 Stylesheet</div>
-        <textarea id="xslt-input"></textarea>
+        <div id="xslt-editor" class="editor-container"></div>
     </div>
     <div id="result-panel">
         <div class="label">Output</div>
-        <textarea id="output-text" readonly>Press Run to see results...</textarea>
+        <div id="output-editor" class="editor-container"></div>
     </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
 
 <script src="lib/SaxonJS2.js"></script>
 <script src="lib/examples.js"></script>
 
-<script>
+<script type="module">
+    import * as monaco from 'https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/+esm';
+
     let xmlEditor, xsltEditor, outputEditor;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // 1. Check if SaxonJS2.js loaded correctly
+    // Wait for DOM to be ready before initializing Monaco
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing Monaco Editor...');
+
+        // Define custom theme to match the dark design
+        monaco.editor.defineTheme('custom-dark', {
+            base: 'vs-dark',
+            inherit: true,
+            rules: [
+                { token: 'comment', foreground: '64748b' },
+                { token: 'keyword', foreground: 'c792ea' },
+                { token: 'string', foreground: 'c3e88d' },
+                { token: 'number', foreground: 'f78c6c' }
+            ],
+            colors: {
+                'editor.background': '#1a1a2e',
+                'editor.foreground': '#e2e8f0',
+                'editor.lineHighlightBackground': '#16213e',
+                'editor.selectionBackground': '#334155',
+                'editorCursor.foreground': '#6366f1'
+            }
+        });
+
+        initializeEditors();
+    });
+
+    function initializeEditors() {
+        console.log('Initializing Monaco editors...');
+
+        // Check if SaxonJS2.js loaded correctly
         if (typeof SaxonJS === 'undefined') {
             console.error("Library not found in /lib/SaxonJS2.js");
             return;
         }
 
-        // 2. Setup Editors
-        const cmConfig = {
-            mode: 'xml',
-            lineNumbers: true,
-            theme: 'material',
-            viewportMargin: Infinity,
-            extraKeys: {
-                "Ctrl-Enter": function() { document.getElementById('run-btn').click(); }
-            }
-        };
-
-        const outputConfig = {
-            mode: 'xml',
-            lineNumbers: true,
-            theme: 'material',
-            viewportMargin: Infinity,
-            readOnly: true
-        };
-
-        xmlEditor = CodeMirror.fromTextArea(document.getElementById('xml-input'), cmConfig);
-        xsltEditor = CodeMirror.fromTextArea(document.getElementById('xslt-input'), cmConfig);
-        outputEditor = CodeMirror.fromTextArea(document.getElementById('output-text'), outputConfig);
-
-        // 3. Default Demo Data
-        xmlEditor.setValue(`<?xml version="1.0" encoding="UTF-8"?>
+        // Setup Monaco Editors with default values
+        const xmlOptions = {
+            value: `<?xml version="1.0" encoding="UTF-8"?>
 <data>
     <user id="1" role="admin">Alice</user>
     <user id="2" role="editor">Bob</user>
-</data>`);
+</data>`,
+            language: 'xml',
+            theme: 'custom-dark',
+            fontSize: 14,
+            fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace",
+            lineNumbers: 'on',
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            minimap: { enabled: false },
+            wordWrap: 'on',
+            tabSize: 2,
+            insertSpaces: true
+        };
 
-        xsltEditor.setValue(`<?xml version="1.0" encoding="UTF-8"?>
+        const xsltOptions = {
+            value: `<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
     <xsl:output method="xml" indent="yes"/>
 
@@ -106,9 +123,56 @@
     <xsl:template match="user">
         <entry name="{.}" type="{@role}"/>
     </xsl:template>
-</xsl:stylesheet>`);
+</xsl:stylesheet>`,
+            language: 'xml',
+            theme: 'custom-dark',
+            fontSize: 14,
+            fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace",
+            lineNumbers: 'on',
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            minimap: { enabled: false },
+            wordWrap: 'on',
+            tabSize: 2,
+            insertSpaces: true
+        };
 
-        // 4. The Transformation Logic (The Fix for JSON error)
+        const outputOptions = {
+            value: "Press Run to see results...",
+            language: 'xml',
+            theme: 'custom-dark',
+            fontSize: 14,
+            fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace",
+            lineNumbers: 'on',
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            minimap: { enabled: false },
+            wordWrap: 'on',
+            tabSize: 2,
+            insertSpaces: true,
+            readOnly: true
+        };
+
+        console.log('Creating XML editor...');
+        xmlEditor = monaco.editor.create(document.getElementById('xml-editor'), xmlOptions);
+        console.log('Creating XSLT editor...');
+        xsltEditor = monaco.editor.create(document.getElementById('xslt-editor'), xsltOptions);
+        console.log('Creating output editor...');
+        outputEditor = monaco.editor.create(document.getElementById('output-editor'), outputOptions);
+
+        // Add keyboard shortcuts
+        xmlEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+            document.getElementById('run-btn').click();
+        });
+        xsltEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+            document.getElementById('run-btn').click();
+        });
+
+        console.log('Monaco editors initialized with default demo data');
+
+        // The Transformation Logic
         document.getElementById('run-btn').addEventListener('click', async () => {
             const runBtn = document.getElementById('run-btn');
             const originalText = runBtn.textContent;
@@ -121,9 +185,6 @@
             outputEditor.setValue("🔄 Transforming XML...");
 
             try {
-                /* Using the XPath transform() function is the most reliable
-                   way to handle dynamic XSLT strings in the browser.
-                */
                 const result = SaxonJS.XPath.evaluate(`
                     transform(map {
                         'stylesheet-text' : $xslt,
@@ -141,11 +202,6 @@
 
                 outputEditor.setValue(result);
 
-                // Show success message temporarily
-                setTimeout(() => {
-                    // Color is handled by CodeMirror theme
-                }, 2000);
-
             } catch (err) {
                 console.error(err);
                 outputEditor.setValue("❌ Transformation Error:\n" + err.message);
@@ -157,14 +213,10 @@
             }
         });
 
-        // 5. Keyboard shortcuts
+        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) {
                 switch (e.key) {
-                    case 'Enter':
-                        e.preventDefault();
-                        document.getElementById('run-btn').click();
-                        break;
                     case 's':
                         e.preventDefault();
                         downloadResult();
@@ -177,7 +229,7 @@
             }
         });
 
-        // 6. Example selector
+        // Example selector
         document.getElementById('example-select').addEventListener('change', (e) => {
             const selectedExample = e.target.value;
             if (selectedExample && examples[selectedExample]) {
@@ -186,14 +238,7 @@
                 outputEditor.setValue("Example loaded! Press Run to see results...");
             }
         });
-
-        // 7. Auto-resize editors on window resize
-        window.addEventListener('resize', () => {
-            if (xmlEditor) xmlEditor.refresh();
-            if (xsltEditor) xsltEditor.refresh();
-            if (outputEditor) outputEditor.refresh();
-        });
-    });
+    }
 
     // Formatting Tool
     function formatAll() {

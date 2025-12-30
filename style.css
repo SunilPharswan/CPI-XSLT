@@ -186,17 +186,30 @@ select option {
 .editor-container {
     flex: 1;
     position: relative;
-}
-
-.CodeMirror {
     height: 100%;
-    font-size: 14px;
-    line-height: 1.6;
-    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    min-height: 200px;
 }
 
-.CodeMirror-focused {
-    outline: none;
+.monaco-editor {
+    height: 100% !important;
+}
+
+.monaco-editor .margin {
+    background: var(--surface) !important;
+}
+
+.monaco-editor .monaco-editor-background {
+    background: var(--surface) !important;
+}
+
+.monaco-editor .view-lines {
+    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+}
+
+.monaco-editor .current-line {
+    background: var(--surface-hover) !important;
 }
 
 #result-panel {
@@ -216,20 +229,7 @@ select option {
     box-shadow: 0 12px 40px var(--shadow);
 }
 
-#output-text {
-    flex: 1;
-    padding: 1.5rem;
-    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
-    overflow: auto;
-    white-space: pre-wrap;
-    margin: 0;
-    font-size: 14px;
-    color: var(--text);
-    background: transparent;
-    border: none;
-    outline: none;
-    line-height: 1.6;
-}
+
 
 button {
     padding: 0.75rem 1.5rem;
